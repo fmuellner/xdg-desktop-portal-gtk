@@ -197,6 +197,34 @@ handle_screenshot (XdpImplScreenshot *object,
   return TRUE;
 }
 
+static gboolean
+handle_pick_color (XdpImplScreenshot *object,
+                   GDBusMethodInvocation *invocation,
+                   const char *arg_handle,
+                   const char *arg_app_id,
+                   GVariant *arg_options)
+{
+  g_autoptr(Request) request = NULL;
+  const char *sender;
+  g_autoptr(GError) error = NULL;
+  g_autoptr(GVariant) result = NULL;
+
+  sender = g_dbus_method_invocation_get_sender (invocation);
+
+  request = request_new (sender, arg_app_id, arg_handle);
+
+  org_gnome_shell_screenshot_call_pick_color_sync (shell,
+                                                   &result,
+                                                   NULL, NULL);
+
+  xdp_impl_screenshot_complete_pick_color (object,
+                                           invocation,
+                                           0,
+                                           result);
+
+  return TRUE;
+}
+
 gboolean
 screenshot_init (GDBusConnection *bus,
                  GError **error)
@@ -206,6 +234,7 @@ screenshot_init (GDBusConnection *bus,
   helper = G_DBUS_INTERFACE_SKELETON (xdp_impl_screenshot_skeleton_new ());
 
   g_signal_connect (helper, "handle-screenshot", G_CALLBACK (handle_screenshot), NULL);
+  g_signal_connect (helper, "handle-pick-color", G_CALLBACK (handle_pick_color), NULL);
 
   if (!g_dbus_interface_skeleton_export (helper,
                                          bus,

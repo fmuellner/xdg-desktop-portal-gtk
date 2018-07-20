@@ -92,6 +92,16 @@
     </method>
 
     <!--
+        PickColor:
+
+        Picks a color and returns the result in the "red", "green",
+        "blue" and "alpha" keys of the @result vardict.
+    -->
+    <method name="PickColor">
+      <arg type="a{sv}" direction="out" name="result"/>
+    </method>
+
+    <!--
         FlashArea:
         @x: the X coordinate of the area to flash
         @y: the Y coordinate of the area to flash
